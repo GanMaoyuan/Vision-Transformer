@@ -6,7 +6,7 @@
 每个像素由 ![](https://latex.codecogs.com/svg.latex?C) （如3）个通道（Channel）表征，每个通道表征一种原色（如RGB，即Red、Green、Blue中的某一个）。<br>
 通道值为 ![](https://latex.codecogs.com/svg.latex?0) 时，该通道亮度为 ![](https://latex.codecogs.com/svg.latex?0) （不发光）；通道值最大（在8-bit图中对应 ![](https://latex.codecogs.com/svg.latex?2^8-1) ）时，该通道亮度最大。<br>
 例如R通道（Red），通道值最大时该通道表征为最亮的红色。<br>
-像素的颜色为混合色，由 ![](https://latex.codecogs.com/svg.latex?C) 个通道进行综合表征。在特殊情况下，![](https://latex.codecogs.com/svg.latex?C) 个通道的值均为 ![](https://latex.codecogs.com/svg.latex?0) ，此时像素表征为纯白色，![](https://latex.codecogs.com/svg.latex?C) 个通道的值均达到最大时像素表征为纯黑色。<br>
+像素的颜色为混合色，由 ![](https://latex.codecogs.com/svg.latex?C) 个通道进行综合表征。在特殊情况下，![](https://latex.codecogs.com/svg.latex?C) 个通道的值均为 ![](https://latex.codecogs.com/svg.latex?0) ，此时像素表征为纯黑色，![](https://latex.codecogs.com/svg.latex?C) 个通道的值均达到最大时像素表征为纯白色。<br>
 图像的分辨率与分割出来的像素的数量有关，用行数、列数来表示，即 ![](https://latex.codecogs.com/svg.latex?(H,W)) 。在这张分割像素图上的左上角取一个小块（Patch），这个小块由 ![](https://latex.codecogs.com/svg.latex?P\times{}P) 个像素组成（ ![](https://latex.codecogs.com/svg.latex?P) 行 ![](https://latex.codecogs.com/svg.latex?P) 列），分辨率即为 ![](https://latex.codecogs.com/svg.latex?(P,P)) 。![](https://latex.codecogs.com/svg.latex?P) 的值一般取为 ![](https://latex.codecogs.com/svg.latex?H) 与 ![](https://latex.codecogs.com/svg.latex?W) 的公因数，这样的话就可以从左上角开始，从左到右、从上到下分割出 ![](https://latex.codecogs.com/svg.latex?N=HW/P^2) 个完整的小块。<br>
 每个小块包含 ![](https://latex.codecogs.com/svg.latex?P^2) 个像素，每个像素又由 ![](https://latex.codecogs.com/svg.latex?C) 个通道值（实数）来表征，那么就可以用一个含有 ![](https://latex.codecogs.com/svg.latex?P^2C) 个元素的实数张量 ![](https://latex.codecogs.com/svg.latex?x_P\in\mathbb{R}^{1\times{}P^2C}) 来直接表征这个小块。<br>
 输入到模型的是整张图而非单个小块，因此，实际输入是一个含有 ![](https://latex.codecogs.com/svg.latex?N\times{}P^2C) 个元素的实数张量 ![](https://latex.codecogs.com/svg.latex?x_p\in\mathbb{R}^{N\times{}P^2C}) ，即一个 ![](https://latex.codecogs.com/svg.latex?N) 行 ![](https://latex.codecogs.com/svg.latex?P^2C) 列的矩阵，直接表征 ![](https://latex.codecogs.com/svg.latex?N) 个小块，也就是整张图。<br>
@@ -53,7 +53,7 @@
 这个形式实际上符合矩阵乘运算的定义（ ![](https://latex.codecogs.com/svg.latex?X) 与 ![](https://latex.codecogs.com/svg.latex?Y) 的矩阵乘结果 ![](https://latex.codecogs.com/svg.latex?Z=XY) 的第 ![](https://latex.codecogs.com/svg.latex?i) 行第 ![](https://latex.codecogs.com/svg.latex?j) 列元素值等于 ![](https://latex.codecogs.com/svg.latex?X) 的第 ![](https://latex.codecogs.com/svg.latex?i) 行与 ![](https://latex.codecogs.com/svg.latex?Y) 的第 ![](https://latex.codecogs.com/svg.latex?j) 列的内积值），于是，可以直接判定
 
 <p align="center">
-<img src="https://latex.codecogs.com/svg.latex?B=qk^\top,">
+<img src="https://latex.codecogs.com/svg.latex?B=qk^\top.">
 </p>
 
 此外又由于
@@ -65,10 +65,16 @@
 于是可定义注意力权重矩阵
 
 <p align="center">
-<img src="https://latex.codecogs.com/svg.latex?\begin{align*}A&=\text{softmax}\left(\frac{B}{\sqrt{D_h}}\right)\\{}&=\text{softmax}\left(\frac{qk^\top}{\sqrt{D_h}}\right)\\{}&\in\mathbb{R}^{L\times{}L},\end{align*}">
+<img src="https://latex.codecogs.com/svg.latex?\begin{align*}A&=\text{softmax}\left(\frac{B}{\sqrt{D_h}}\right)\\{}&=\text{softmax}\left(\frac{qk^\top}{\sqrt{D_h}}\right)\\{}&\in\mathbb{R}^{L\times{}L}.\end{align*}">
 </p>
 
-其第 ![](https://latex.codecogs.com/svg.latex?i) 行的 ![](https://latex.codecogs.com/svg.latex?L) 个矩阵元素值就是序列的全体 ![](https://latex.codecogs.com/svg.latex?L) 个元素对元素 ![](https://latex.codecogs.com/svg.latex?i) 的相应权重，于是单个自注意力（Self-Attention，SA）头的输出即为
+对于 ![](https://latex.codecogs.com/svg.latex?A_{ij}) ，先确定行下标 ![](https://latex.codecogs.com/svg.latex?i) ，而列下标 ![](https://latex.codecogs.com/svg.latex?j) 从 ![](https://latex.codecogs.com/svg.latex?1) 迭代至 ![](https://latex.codecogs.com/svg.latex?L) ，
+
+<p align="center">
+<img src="https://latex.codecogs.com/svg.latex?j\in[1,2,\cdots,L],">
+</p>
+
+因此注意力权重矩阵的第 ![](https://latex.codecogs.com/svg.latex?i) 行的 ![](https://latex.codecogs.com/svg.latex?L) 个矩阵元素值实际上就是序列的全体 ![](https://latex.codecogs.com/svg.latex?L) 个元素对序列元素 ![](https://latex.codecogs.com/svg.latex?i) 的相应权重，于是单个自注意力（Self-Attention，SA）头的输出即为
 
 <p align="center">
 <img src="https://latex.codecogs.com/svg.latex?\text{SA}(z)=Av\in\mathbb{R}^{L\times{}D_h},">
