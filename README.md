@@ -4,13 +4,14 @@
 
 用 ![](https://latex.codecogs.com/svg.latex?x\in\mathbb{R}^{H\times{}W\times{}C}) 来表征一个图像，这个图像被分成 ![](https://latex.codecogs.com/svg.latex?H\times{}W) 个像素，![](https://latex.codecogs.com/svg.latex?H) 行 ![](https://latex.codecogs.com/svg.latex?W) 列，高（Height）即为 ![](https://latex.codecogs.com/svg.latex?H) ，宽（Width）即为 ![](https://latex.codecogs.com/svg.latex?W) 。<br>
 每个像素由 ![](https://latex.codecogs.com/svg.latex?C) （如3）个通道（Channel）表征，每个通道表征一种原色（如RGB，即Red、Green、Blue中的某一个）。<br>
-通道值为 ![](https://latex.codecogs.com/svg.latex?0) 时，该通道亮度为 ![](https://latex.codecogs.com/svg.latex?0) （不发光）；通道值最大（在8-bit图中对应 ![](https://latex.codecogs.com/svg.latex?2^8-1) ）时，该通道亮度最大。<br>
+通道值为 ![](https://latex.codecogs.com/svg.latex?0) 时，该通道亮度为 ![](https://latex.codecogs.com/svg.latex?0) （不发光）；通道值最大（在8-bit图中对应 ![](https://latex.codecogs.com/svg.latex?2^8-1=255) ）时，该通道亮度最大。<br>
 例如R通道（Red），通道值最大时该通道表征为最亮的红色。<br>
 像素的颜色为混合色，由 ![](https://latex.codecogs.com/svg.latex?C) 个通道进行综合表征。在特殊情况下，![](https://latex.codecogs.com/svg.latex?C) 个通道的值均为 ![](https://latex.codecogs.com/svg.latex?0) ，此时像素表征为纯黑色，![](https://latex.codecogs.com/svg.latex?C) 个通道的值均达到最大时像素表征为纯白色。<br>
 图像的分辨率与分割出来的像素的数量有关，用行数、列数来表示，即 ![](https://latex.codecogs.com/svg.latex?(H,W)) 。在这张分割像素图上的左上角取一个小块（Patch），这个小块由 ![](https://latex.codecogs.com/svg.latex?P\times{}P) 个像素组成（ ![](https://latex.codecogs.com/svg.latex?P) 行 ![](https://latex.codecogs.com/svg.latex?P) 列），分辨率即为 ![](https://latex.codecogs.com/svg.latex?(P,P)) 。![](https://latex.codecogs.com/svg.latex?P) 的值一般取为 ![](https://latex.codecogs.com/svg.latex?H) 与 ![](https://latex.codecogs.com/svg.latex?W) 的公因数，这样的话就可以从左上角开始，从左到右、从上到下分割出 ![](https://latex.codecogs.com/svg.latex?N=HW/P^2) 个完整的小块。<br>
-每个小块包含 ![](https://latex.codecogs.com/svg.latex?P^2) 个像素，每个像素又由 ![](https://latex.codecogs.com/svg.latex?C) 个通道值（实数）来表征，那么就可以用一个含有 ![](https://latex.codecogs.com/svg.latex?P^2C) 个元素的实数张量 ![](https://latex.codecogs.com/svg.latex?x_P\in\mathbb{R}^{1\times{}P^2C}) 来直接表征这个小块。<br>
+每个小块包含 ![](https://latex.codecogs.com/svg.latex?P^2) 个像素，每个像素又由 ![](https://latex.codecogs.com/svg.latex?C) 个通道值（实数）来表征，那么就可以用一个含有 ![](https://latex.codecogs.com/svg.latex?P^2C) 个元素的实数向量 ![](https://latex.codecogs.com/svg.latex?x\in\mathbb{R}^{P^2C}) 来直接表征这个小块。<br>
 输入到模型的是整张图而非单个小块，因此，实际输入是一个含有 ![](https://latex.codecogs.com/svg.latex?N\times{}P^2C) 个元素的实数张量 ![](https://latex.codecogs.com/svg.latex?x_p\in\mathbb{R}^{N\times{}P^2C}) ，即一个 ![](https://latex.codecogs.com/svg.latex?N) 行 ![](https://latex.codecogs.com/svg.latex?P^2C) 列的矩阵，直接表征 ![](https://latex.codecogs.com/svg.latex?N) 个小块，也就是整张图。<br>
-这个张量可以理解为表征了一个含有 ![](https://latex.codecogs.com/svg.latex?N) 个token的序列，每个token的表征维度大小暂时为 ![](https://latex.codecogs.com/svg.latex?P^2C) 。这与一个普通的文本输入序列没有区别。
+应注意，![](https://latex.codecogs.com/svg.latex?N\times{}P^2C) 个通道值会被转换为浮点数（范围为 ![](https://latex.codecogs.com/svg.latex?\left[0,1\right]) ），不再保持为原先的整数（范围为 ![](https://latex.codecogs.com/svg.latex?\left[0,255\right]) ）。将每个通道值从原先的整型切换为浮点型，再除以 `255.0` ，就完成了这样的转换。例如，某个通道值原本为整型的 ![](https://latex.codecogs.com/svg.latex?255) ，它会被转换为32位浮点型的 ![](https://latex.codecogs.com/svg.latex?1.0\dots0)（小数点后总共有32个0）。<br>
+![](https://latex.codecogs.com/svg.latex?x_p\in\mathbb{R}^{N\times{}P^2C}) 张量可以理解为表征了一个含有 ![](https://latex.codecogs.com/svg.latex?N) 个token的序列，每个token的表征维度大小暂时为 ![](https://latex.codecogs.com/svg.latex?P^2C) 。这与一个普通的文本输入序列没有区别。
 <br><br><br><br><br>
 
 ## 嵌入层
