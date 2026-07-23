@@ -1,5 +1,3 @@
-#### 《An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale》论文阅读笔记
-
 # 图像序列化
 
 ## 1、像素
