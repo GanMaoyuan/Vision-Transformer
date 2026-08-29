@@ -1,4 +1,4 @@
-#### [《An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale》](https://arxiv.org/abs/2010.11929) 论文阅读笔记
+#### [《An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale》](https://arxiv.org/abs/2010.11929) 论文精读与思考笔记
 <br><br><br><br><br>
 
 # 图像序列化
